@@ -1,0 +1,4 @@
+sensor:
+     - platform: mysigen_battery
+       username: {USERNAME}
+       password: {ENCRYPTED PASSWORD}

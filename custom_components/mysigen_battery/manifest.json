@@ -1,0 +1,9 @@
+{
+  "domain": "mysigen_battery",
+  "name": "MySigen Battery",
+  "documentation": "",
+  "requirements": ["requests>=2.28.0"],
+  "codeowners": [],
+  "version": "1.0.0",
+  "iot_class": "cloud_polling"
+}
