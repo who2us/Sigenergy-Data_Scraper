@@ -184,6 +184,14 @@ class MySigenSensor(SensorEntity):
         self._data_handler = data_handler
         self._attr_name = f"MySigen {name}"
         self._attr_unique_id = f"mysigen_battery_{name.lower().replace(' ', '_')}"
+        
+        # Add device info to group all sensors under one device
+        self._attr_device_info = {
+            "identifiers": {("mysigen_battery", "sigenstor_battery")},
+            "name": "Sigenstor Battery",
+            "manufacturer": "Sigen Energy",
+            "model": "Battery System",
+        }
     
     def update(self):
         """Update sensor."""
@@ -198,10 +206,20 @@ class MySigenBatterySoC(MySigenSensor):
         self._attr_native_unit_of_measurement = PERCENTAGE
         self._attr_device_class = SensorDeviceClass.BATTERY
         self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._last_valid_value = None  # Store last known value
     
     @property
     def native_value(self):
-        return self._data_handler.data.get("energy_flow", {}).get("batterySoc")
+        """Return battery SoC, keeping last value if API returns None."""
+        current_value = self._data_handler.data.get("energy_flow", {}).get("batterySoc")
+        
+        # If we got a valid value, store it
+        if current_value is not None:
+            self._last_valid_value = current_value
+            return current_value
+        
+        # If API returns None but we have a previous value, keep showing it
+        return self._last_valid_value
 
 
 class MySigenBatteryPower(MySigenSensor):
